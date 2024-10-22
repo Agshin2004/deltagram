@@ -53,7 +53,7 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=50, unique=True)
     email = models.CharField(max_length=100, unique=True)
 
-    # Required Fields (because we override AbstractBaseUser)
+    # Required Fields (since we override AbstractBaseUser)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
     created_date = models.DateTimeField(auto_now_add=True)

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'authentication.apps.AuthenticationConfig',
+    'userprofile.apps.UserprofileConfig',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Custom middlewares
+    'userprofile.middleware.UpdateLastSeenMiddleware'
 ]
 
 ROOT_URLCONF = 'delagram.urls'
