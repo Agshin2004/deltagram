@@ -1,0 +1,7 @@
+{% if messages %}
+    {% for message in messages %}
+    <ul style="list-style-type: none;">
+        <li class="alert alert-{{ message.tags }}">{{ message }} </li>
+    </ul>
+    {% endfor %}
+{% endif %}

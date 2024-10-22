@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %} Register {% endblock title %}
+
+
+{% block content %}
+    {% include 'includes/messages.html' %}
+
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-success">Register!</button>
+    </form>
+
+    {% comment %} Show errors on the page if any {% endcomment %}
+        <ul>
+            {% for field, errors in form.items %}
+                {% for error in errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>  
+
+{% endblock content %}

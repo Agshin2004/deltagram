@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %} Login {% endblock title %}
+
+
+{% block content %}
+    {% include 'includes/messages.html' %}
+    <div class="form-group">
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            
+            <p> 
+                <input type="email" name="email" class="form-control" placeholder="Enter Email"> 
+            </p>
+            <p> 
+                <input type="password" name="password" class="form-control" placeholder="Enter Password">
+            </p>
+
+            <button type="submit" class="btn btn-success">Login!</button>
+        </form>
+    </div>
+
+{% endblock content %}
