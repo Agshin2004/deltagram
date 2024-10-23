@@ -26,9 +26,14 @@
                     <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user_profile' username=request.user.username %}">
+                        <img width="40" height="40" src="{{ request.user.profile.get_profile_picture }}" alt="Profile" class="rounded-2">
+                    </a>
+                </li>
                 {% comment %} !FOR DEBUG PURPOSES {% endcomment %}
                 <li class="nav-item">
-                    <span class="nav-link">User: {{ request.user.username }}</span>
+                    <span class="nav-link">User: {{ request.user.username }}; Id: {{ request.user.id }}</span>
                 </li>
             {% endif %}
             

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} {{ user_profile | title }}'s Profile {% endblock title %}
+
+{% block content %}
+    {% include 'includes/messages.html' %}
+
+    <h1>{{ user_profile.user.username }}</h1>
+    <h3>Last Seen:</h3>
+    {{ user_profile.last_seen }}
+    <br>
+
+    <img class="rounded-5" width="55" height="55" src="{{ user_profile.get_profile_picture }}" alt="Profile Picture of {{ request.user.username }}">
+    
+
+    {% comment %}* If current user visits his or her own profile {% endcomment %}
+    {% if request.user.username == user_profile.user.username %}
+        <form action="{% url 'user_profile' username=request.user.username %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {{ profile_form.as_p }}
+            {{ user_form.as_p }}
+
+            <button type="submit" class="btn btn-secondary">Submit</button>
+
+
+            {% comment %} Show errors on the page if any {% endcomment %}
+            <ul>
+                {{ profile_form.errors }}
+                {{ user_form.errors }}
+            </ul> 
+        </form>
+
+        <li class="list-group-item list-group-item-success">Followers: {{ user_profile.followers.count }}</li>
+        <li class="list-group-item list-group-item-danger">Following: {{ user_profile.following.count }}</li>
+
+    
+    {% else %}
+    {% comment %}* If current user visits another profile {% endcomment %}
+        <br><br>
+
+        {% if request.user in user_profile.followers.all %}
+            <a href="{% url 'unfollow' user_id=user_profile.user.id %}" class="btn btn-primary unfollow-btn" id="{{ user_profile.user.id }}">
+                Unfollow
+            </a>
+        {% else %}
+            <a href="{% url 'follow' user_id=user_profile.user.id %}" class="btn btn-primary follow-btn" id="{{ user_profile.user.id }}">
+                Follow
+            </a>
+        {% endif %}
+
+        <ul class="list-group">
+            <li class="list-group-item list-group-item-primary">First Name: {{ user_profile.user.first_name }}</li>
+            <li class="list-group-item list-group-item-secondary">Last Name: {{ user_profile.user.last_name }}</li>
+            <li class="list-group-item list-group-item-success">Followers: 
+                <span class="followers">
+                    {{ user_profile.followers.count }}
+                </span>
+            </li>
+            <li class="list-group-item list-group-item-danger following">Following: {{ user_profile.following.count }}</li>
+            {% if user_profile.bio %}
+                <li class="list-group-item list-group-item-warning">
+                    Bio: {{ user_profile.bio }}
+                </li>
+            {% endif %}
+        </ul>
+    {% endif %}
+
+
+
+    <script>
+        const followBtn = document.querySelector('.follow-btn') || null;
+        const unfollowBtn = document.querySelector('.unfollow-btn') || null;
+        let followersCount = document.querySelector('.followers').innerHTML.trim();
+        let incremented = false;
+        if (followBtn) {
+            followBtn.addEventListener('click', e => {
+                e.preventDefault()
+                const user_id = document.querySelector('.follow-btn').id
+                console.log(user_id);
+                fetch(`/profile/follow/${user_id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        // Incrementing followers count
+                        followersCount++;
+                        if(!incremented) {
+                            document.querySelector('.followers').innerHTML = followersCount;
+                            document.querySelector('.follow-btn').innerHTML = 'Unfollow'
+
+                            incremented = true;
+                            alertify.success('Followed')
+                        }
+                    })
+                })
+
+        } else {
+            unfollowBtn.addEventListener('click', e => {
+                e.preventDefault()
+                const user_id = document.querySelector('.unfollow-btn').id
+                console.log(user_id);
+                fetch(`/profile/unfollow/${user_id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        // Decrementing followers count
+                        followersCount--;
+                        if(!incremented) {
+                            document.querySelector('.followers').innerHTML = followersCount;
+                            document.querySelector('.unfollow-btn').innerHTML = 'Follow'
+
+                            incremented = true;
+                            alertify.success('Unfollowed')
+                        }
+                    })
+                })
+        }
+    
+
+    </script>
+{% endblock content %}
