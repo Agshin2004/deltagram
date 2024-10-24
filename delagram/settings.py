@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     
     'authentication.apps.AuthenticationConfig',
     'userprofile.apps.UserprofileConfig',
+    'post.apps.PostConfig',
 ]
 
 MIDDLEWARE = [
@@ -120,7 +121,7 @@ MESSAGE_TAGS = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Baku'
 
 USE_I18N = True
 

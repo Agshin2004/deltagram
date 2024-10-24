@@ -3,12 +3,14 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 
 from authentication.models import User
+from post.models import Post
 
 from .models import Profile
 from .forms import ProfileForm, UserForm
 
 def user_profile(request, username):
     user_profile = get_object_or_404(Profile, user__username=username)
+    posts = Post.objects.filter(user=user_profile.user).order_by('-date_created')
 
     if user_profile.user == request.user:
         if request.method == 'POST':
@@ -27,12 +29,13 @@ def user_profile(request, username):
         user_form = UserForm(instance=user_profile.user)
         profile_form = ProfileForm(instance=user_profile)
 
-        ctx = {'user_profile': user_profile, 'profile_form': profile_form, 'user_form': user_form}
+        ctx = {'user_profile': user_profile, 'profile_form': profile_form, 'user_form': user_form, 'posts': posts}
         return render(request, 'userprofile/user_profile.html', context=ctx)
 
     else:
         # Not current user's profile
-        ctx = {'user_profile': user_profile}
+        posts = Post.objects.filter(user=user_profile.user).order_by('-date_created')
+        ctx = {'user_profile': user_profile, 'posts': posts}
         return render(request, 'userprofile/user_profile.html', context=ctx)
 
 

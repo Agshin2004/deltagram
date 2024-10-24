@@ -11,6 +11,7 @@ urlpatterns = [
     path('', main_views.home, name='home'),
     path('authentication/', include('authentication.urls')),
     path('profile/', include('userprofile.urls')),
+    path('post/', include('post.urls')),
 ]
 
 if settings.DEBUG: 

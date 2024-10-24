@@ -36,7 +36,37 @@
         <li class="list-group-item list-group-item-success">Followers: {{ user_profile.followers.count }}</li>
         <li class="list-group-item list-group-item-danger">Following: {{ user_profile.following.count }}</li>
 
-    
+        
+        
+        <br><br>
+        <h1>Posts of the user</h1>
+        <div class="row">
+        {% for post in posts %}
+            <div class="col-md-4 mb-3">
+                <div class="card" style="width: 18rem;">
+                    <img height="260" class="card-img-top" src="{{ post.image.url }}" alt="{{ post.user }}'s {{ post.title }}">
+                    <div class="card-body">
+                        <a href="{% url 'post_detail' post_id=post.id %}">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                        </a>
+                            
+                        <p>
+                            {{ post.description }}
+
+                            <p>
+                                <span class="like-count">{{ post.like.count }}</span>
+
+                                <button class="like" data-id="{{ post.id }}">
+                                    <img width="15" src="{% static 'images/not_liked.png' %}" alt="Like Post">
+                                </button>
+                            </p>
+
+                        </p>
+                    </div>
+                
+                </div>
+            </div>
+        {% endfor %}
     {% else %}
     {% comment %}* If current user visits another profile {% endcomment %}
         <br><br>
@@ -66,11 +96,70 @@
                 </li>
             {% endif %}
         </ul>
+
+
+        <br><br>
+        <h1>Posts of the user</h1>
+        <div class="row">
+        {% for post in posts %}
+            <div class="col-md-4 mb-3">
+                <div class="card" style="width: 18rem;">
+                    <img height="260" class="card-img-top" src="{{ post.image.url }}" alt="{{ post.user }}'s {{ post.title }}">
+                    <div class="card-body">
+                        <a href="{% url 'post_detail' post_id=post.id %}">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                        </a>
+                            
+                        <p>
+                            {{ post.description }}
+                        <p>
+                            <span class="like-count">{{ post.like.count }}</span>
+
+                            <button class="like" data-id="{{ post.id }}">
+                                <img width="15" src="{% static 'images/not_liked.png' %}" alt="Like Post">
+                            </button>
+                        </p>
+
+                        </p>
+                    </div>
+                
+                </div>
+            </div>
+        {% endfor %}
+
     {% endif %}
 
 
 
     <script>
+        // Like
+        let likeCount = parseInt(document.querySelector('.like-count').innerHTML);
+        let likeBtn = document.querySelector('.like');
+        const auth = "{{ request.user.is_authenticated }}"
+        const postId = likeBtn.dataset.id
+
+        // Like
+        document.querySelector('.like').addEventListener('click', e => {
+            e.preventDefault();
+            console.log('btn clicked');
+            // Check if user is logged in 
+            if (auth == 'False') {
+                alertify.error('You must be logged in to be able to like posts!')
+            } else {
+                fetch(`/post/like_or_dislike_post/${postId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                    if (data.success == "Liked") {
+                        likeCount++;
+                    } else {
+                        likeCount--;
+                    }
+                    document.querySelector('.like-count').innerHTML = likeCount; // Update the content in the DOM
+                })
+            } 
+        })
+
+        // Follow
         const followBtn = document.querySelector('.follow-btn') || null;
         const unfollowBtn = document.querySelector('.unfollow-btn') || null;
         let followersCount = document.querySelector('.followers').innerHTML.trim();
@@ -117,7 +206,7 @@
                     })
                 })
         }
-    
-
+        
+         
     </script>
 {% endblock content %}

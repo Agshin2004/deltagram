@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} {{ post.title }} {% endblock title %}
+
+
+{% block content %}
+    <h3>{{ post.title }}</h3>
+    <img src="{{ post.image.url }}" alt="{{ post.title }}">
+    <p>
+        {{ post.description }}
+
+        <p>
+            <span class="like-count">{{ post.like.count }}</span>
+
+            <button class="like" data-id="{{ post.id }}">
+                <img width="15" src="{% static 'images/not_liked.png' %}" alt="Like Post">
+            </button>
+        </p>
+
+    </p>
+
+
+
+    {% if post.user == request.user %}
+        <br><br>
+        <a href="{% url 'remove_post' post_id=post.id %}" class="btn btn-primary">Remove Post</a>
+    {% endif %}
+
+
+    <script>
+        let likeCount = parseInt(document.querySelector('.like-count').innerHTML);
+        let likeBtn = document.querySelector('.like');
+        const auth = "{{ request.user.is_authenticated }}"
+        const postId = likeBtn.dataset.id
+        
+        document.querySelector('.like').addEventListener('click', e => {
+            e.preventDefault();
+
+            // Check if user is logged in 
+            if (auth == 'False') {
+                alertify.error('You must be logged in to be able to like posts!')
+            } else {
+                fetch(`/post/like_or_dislike_post/${postId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                    if (data.success == "Liked") {
+                        likeCount++;
+                    } else {
+                        likeCount--;
+                    }
+                    document.querySelector('.like-count').innerHTML = likeCount; // Update the content in the DOM
+                })
+            } 
+        })
+         
+    </script>
+{% endblock content %}

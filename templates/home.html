@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %} Home {% endblock title %}
 
@@ -20,6 +21,66 @@
             </ul>
         </div>
     </div>
+
+    
+        <h1>Posts of the users</h1>
+        <div class="row">
+            {% for post in posts %}
+                <div class="col-md-4 mb-3">
+                    <div class="card" style="width: 18rem;">
+                        <img height="260" class="card-img-top" src="{{ post.image.url }}" alt="{{ post.user }}'s {{ post.title }}">
+                        <div class="card-body">
+                            <a href="{% url 'post_detail' post_id=post.id %}">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                            </a>
+                                
+                            <p>
+                                {{ post.description }}
+
+                                <p>
+                                    <span class="like-count">{{ post.like.count }}</span>
+
+                                    <button class="like" data-id="{{ post.id }}">
+                                        <img width="15" src="{% static 'images/not_liked.png' %}" alt="Like Post">
+                                    </button>
+                                </p>
+
+                            </p>
+                        </div>
+                    
+                    </div>
+                </div>
+            {% endfor %}
+
+            
+                
+    <script>
+        let likeCount = parseInt(document.querySelector('.like-count').innerHTML);
+        let likeBtn = document.querySelector('.like');
+        const auth = "{{ request.user.is_authenticated }}"
+        const postId = likeBtn.dataset.id
+        
+        document.querySelector('.like').addEventListener('click', e => {
+            e.preventDefault();
+
+            // Check if user is logged in 
+            if (auth == 'False') {
+                alertify.error('You must be logged in to be able to like posts!')
+            } else {
+                fetch(`/post/like_or_dislike_post/${postId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                    if (data.success == "Liked") {
+                        likeCount++;
+                    } else {
+                        likeCount--;
+                    }
+                    document.querySelector('.like-count').innerHTML = likeCount; // Update the content in the DOM
+                })
+            } 
+        })
+         
+    </script>
 
 
 {% endblock content %}

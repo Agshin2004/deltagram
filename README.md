@@ -1,2 +1,2 @@
-# Deltagram (Instagram Clone)
+# Delagram (Instagram Clone)
 
