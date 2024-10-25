@@ -1,0 +1,9 @@
+{% load static %}
+
+<button class="like" data-id="{{ post.id }}">
+    {% if request.user in post.like.all %}
+        <img class="like-img" width="15" src="{% static 'images/liked.png' %}" alt="Like Post">
+    {% else %}
+        <img class="like-img" width="15" src="{% static 'images/not_liked.png' %}" alt="Like Post">
+    {% endif %}
+</button>

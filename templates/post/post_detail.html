@@ -14,9 +14,8 @@
         <p>
             <span class="like-count">{{ post.like.count }}</span>
 
-            <button class="like" data-id="{{ post.id }}">
-                <img width="15" src="{% static 'images/not_liked.png' %}" alt="Like Post">
-            </button>
+            {% include 'includes/post_like_button.html' %}
+
         </p>
 
     </p>
@@ -29,31 +28,56 @@
     {% endif %}
 
 
-    <script>
-        let likeCount = parseInt(document.querySelector('.like-count').innerHTML);
-        let likeBtn = document.querySelector('.like');
-        const auth = "{{ request.user.is_authenticated }}"
-        const postId = likeBtn.dataset.id
-        
-        document.querySelector('.like').addEventListener('click', e => {
-            e.preventDefault();
+    <br><br><br>
 
-            // Check if user is logged in 
-            if (auth == 'False') {
-                alertify.error('You must be logged in to be able to like posts!')
-            } else {
-                fetch(`/post/like_or_dislike_post/${postId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                    if (data.success == "Liked") {
-                        likeCount++;
-                    } else {
-                        likeCount--;
-                    }
-                    document.querySelector('.like-count').innerHTML = likeCount; // Update the content in the DOM
-                })
-            } 
-        })
-         
-    </script>
+        {% if comments %}
+            <section style="background-color: #ad655f;">
+            <div class="container my-5 py-5">
+                <div class="row d-flex justify-content-center">
+                <div class="col-md-12 col-lg-10">
+                    <div class="card text-body">
+                    <div class="card-body p-4">
+                        <h4 class="mb-0">Recent comments</h4>
+                        <p class="fw-light mb-4 pb-2">Latest Comments section by users</p>
+                        {% for comment in comments %}
+                            <div class="card-body p-4">
+                            <div class="d-flex flex-start">
+                                <img class="rounded-circle shadow-1-strong me-3"
+                                    src="{{ comment.user.profile.profile_picture.url }}" alt="avatar" width="60"
+                                    height="60" />
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ comment.user.username }}</h6>
+                                <div class="d-flex align-items-center mb-3">
+                                <p class="mb-0">
+                                    {{ comment.date_created |date:"jS F, Y" }}
+                                </p>
+                                </div>
+                                    <h4>{{ comment.title }}</h4>                                
+                                    <br>
+                                <p class="mb-0">
+                                    {{ comment.description }}
+                                </p>
+                            </div>
+                            </div>
+                        </div>
+                    <hr class="my-0" style="height: 1px;" />
+                {% endfor %}
+
+
+                    </div>
+                </div>
+                </div>
+            </div>
+            </section>
+        {% endif %}
+
+
+    <form action="{% url 'post_detail' post_id=post.id %}" method="post">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+
+
 {% endblock content %}

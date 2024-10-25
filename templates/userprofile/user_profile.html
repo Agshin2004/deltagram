@@ -56,9 +56,7 @@
                             <p>
                                 <span class="like-count">{{ post.like.count }}</span>
 
-                                <button class="like" data-id="{{ post.id }}">
-                                    <img width="15" src="{% static 'images/not_liked.png' %}" alt="Like Post">
-                                </button>
+                                {% include 'includes/post_like_button.html' %}
                             </p>
 
                         </p>
@@ -115,9 +113,7 @@
                         <p>
                             <span class="like-count">{{ post.like.count }}</span>
 
-                            <button class="like" data-id="{{ post.id }}">
-                                <img width="15" src="{% static 'images/not_liked.png' %}" alt="Like Post">
-                            </button>
+                            {% include 'includes/post_like_button.html' %}
                         </p>
 
                         </p>
@@ -132,33 +128,6 @@
 
 
     <script>
-        // Like
-        let likeCount = parseInt(document.querySelector('.like-count').innerHTML);
-        let likeBtn = document.querySelector('.like');
-        const auth = "{{ request.user.is_authenticated }}"
-        const postId = likeBtn.dataset.id
-
-        // Like
-        document.querySelector('.like').addEventListener('click', e => {
-            e.preventDefault();
-            console.log('btn clicked');
-            // Check if user is logged in 
-            if (auth == 'False') {
-                alertify.error('You must be logged in to be able to like posts!')
-            } else {
-                fetch(`/post/like_or_dislike_post/${postId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                    if (data.success == "Liked") {
-                        likeCount++;
-                    } else {
-                        likeCount--;
-                    }
-                    document.querySelector('.like-count').innerHTML = likeCount; // Update the content in the DOM
-                })
-            } 
-        })
-
         // Follow
         const followBtn = document.querySelector('.follow-btn') || null;
         const unfollowBtn = document.querySelector('.unfollow-btn') || null;

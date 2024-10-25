@@ -4,8 +4,8 @@ from django.contrib import messages
 
 
 
-from post.forms import PostForm
-from post.models import Post
+from post.forms import CommentForm, PostForm
+from post.models import Post, Comment
 
 
 
@@ -38,8 +38,24 @@ def remove_post(request, post_id):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    ctx = {'post': post}
-    return render(request, 'post/post_detail.html', context=ctx)
+    comments = Comment.objects.filter(post=post).order_by('-date_created')
+    comment_form = CommentForm()
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        
+        if comment_form.is_valid():
+            obj = comment_form.save(commit=False)
+            obj.post = post
+            obj.user = request.user
+            obj.save()
+            
+            messages.success(request, 'Comment was added successfully')
+            return redirect('post_detail', post_id=post_id)
+        else:
+            print(comment_form.errors)  
+    else:
+        ctx = {'post': post, 'comment_form': comment_form, 'comments': comments}
+        return render(request, 'post/post_detail.html', context=ctx)
     
     
     
@@ -48,7 +64,7 @@ def like_or_dislike_post(request, post_id):
     print(post.like)
     if request.user in post.like.all():
         post.like.remove(request.user)
-        return JsonResponse({'Success': 'Disliked'})
+        return JsonResponse({'success': 'Disliked'})
     else:
         post.like.add(request.user)
         return JsonResponse({'success': 'Liked'})
