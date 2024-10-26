@@ -36,36 +36,65 @@
         <li class="list-group-item list-group-item-success">Followers: {{ user_profile.followers.count }}</li>
         <li class="list-group-item list-group-item-danger">Following: {{ user_profile.following.count }}</li>
 
-        
-        
-        <br><br>
-        <h1>Posts of the user</h1>
-        <div class="row">
-        {% for post in posts %}
-            <div class="col-md-4 mb-3">
-                <div class="card" style="width: 18rem;">
-                    <img height="260" class="card-img-top" src="{{ post.image.url }}" alt="{{ post.user }}'s {{ post.title }}">
-                    <div class="card-body">
-                        <a href="{% url 'post_detail' post_id=post.id %}">
-                            <h5 class="card-title">{{ post.title }}</h5>
-                        </a>
-                            
-                        <p>
-                            {{ post.description }}
-
-                            <p>
-                                <span class="like-count">{{ post.like.count }}</span>
-
-                                {% include 'includes/post_like_button.html' %}
-                            </p>
-
-                        </p>
-                    </div>
-                
+        <div class="d-flex justify-content-end mb-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-header">
+                    Followers ({{ profiles_following_current_user.count }})
                 </div>
+                <ul class="list-group list-group-flush">
+                    {% for profile in profiles_following_current_user %}
+                        <li class="list-group-item">
+                            <a href="{% url 'user_profile' username=profile.user.username %}">{{ profile.user.username }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
-        {% endfor %}
+        </div>
+        {% if posts %}
+            <br><br>
+            <h1>Posts of the user</h1>
+            <div class="row">
+            {% for post in posts %}
+                <div class="col-md-4 mb-3">
+                    <div class="card" style="width: 18rem;">
+                        <img height="260" class="card-img-top" src="{{ post.image.url }}" alt="{{ post.user }}'s {{ post.title }}">
+                        <div class="card-body">
+                            <a href="{% url 'post_detail' post_id=post.id %}">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                            </a>
+                                
+                            <p>
+                                {{ post.description }}
+
+                                <p>
+                                    <span class="like-count">{{ post.like.count }}</span>
+
+                                    {% include 'includes/post_like_button.html' %}
+                                </p>
+
+                            </p>
+                        </div>
+                    
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
     {% else %}
+        <div class="d-flex justify-content-end mb-3">
+        <div class="card" style="width: 18rem;">
+            <div class="card-header">
+                Followers ({{ profiles_following_current_user.count }})
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for profile in profiles_following_current_user %}
+                    <li class="list-group-item">
+                        <a href="{% url 'user_profile' username=profile.user.username %}">{{ profile.user.username }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
     {% comment %}* If current user visits another profile {% endcomment %}
         <br><br>
 
@@ -95,35 +124,36 @@
             {% endif %}
         </ul>
 
+        
+        {% if posts %}
+            <br><br>
+            <h1>Posts of the user</h1>
+            <div class="row">
+            {% for post in posts %}
+                <div class="col-md-4 mb-3">
+                    <div class="card" style="width: 18rem;">
+                        <img height="260" class="card-img-top" src="{{ post.image.url }}" alt="{{ post.user }}'s {{ post.title }}">
+                        <div class="card-body">
+                            <a href="{% url 'post_detail' post_id=post.id %}">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                            </a>
+                                
+                            <p>
+                                {{ post.description }}
+                            <p>
+                                <span class="like-count">{{ post.like.count }}</span>
 
-        <br><br>
-        <h1>Posts of the user</h1>
-        <div class="row">
-        {% for post in posts %}
-            <div class="col-md-4 mb-3">
-                <div class="card" style="width: 18rem;">
-                    <img height="260" class="card-img-top" src="{{ post.image.url }}" alt="{{ post.user }}'s {{ post.title }}">
-                    <div class="card-body">
-                        <a href="{% url 'post_detail' post_id=post.id %}">
-                            <h5 class="card-title">{{ post.title }}</h5>
-                        </a>
-                            
-                        <p>
-                            {{ post.description }}
-                        <p>
-                            <span class="like-count">{{ post.like.count }}</span>
+                                {% include 'includes/post_like_button.html' %}
+                            </p>
 
-                            {% include 'includes/post_like_button.html' %}
-                        </p>
-
-                        </p>
+                            </p>
+                        </div>
+                    
                     </div>
-                
                 </div>
-            </div>
-        {% endfor %}
-
+            {% endfor %}
     {% endif %}
+{% endif %}
 
 
 
@@ -133,6 +163,8 @@
         const unfollowBtn = document.querySelector('.unfollow-btn') || null;
         let followersCount = document.querySelector('.followers').innerHTML.trim();
         let incremented = false;
+        const auth = "{{ request.user.is_authenticated }}"
+
         if (followBtn) {
             followBtn.addEventListener('click', e => {
                 e.preventDefault()
@@ -174,8 +206,7 @@
                         }
                     })
                 })
-        }
+            }
         
-         
     </script>
 {% endblock content %}

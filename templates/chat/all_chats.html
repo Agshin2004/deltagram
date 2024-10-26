@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %} All Chats {% endblock title %}
+
+
+{% block content %}
+    {% for room_uuid, interlocutor_qst in interlocutors.items %}
+        <a href="{% url 'chat_detail' chat_uuid=room_uuid %}">
+            {% for interlocutor in interlocutor_qst %}
+                <p>
+                    {{ interlocutor.username }}
+                </p>
+            {% endfor %}
+        </a>
+    {% endfor %}
+
+    {% comment %} Start new chat {% endcomment %}
+    <div class="d-flex justify-content-end mb-3">
+        <div class="card" style="width: 18rem;">
+            <div class="card-header">
+                Users
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for user in users %}
+                    <li class="list-group-item">
+                        <form action="{% url 'start_chat' %}" method="post">    
+                            {% csrf_token %}
+                            <input type="hidden" name="user" value="{{ user.id }}">
+                            <button type="submit" class="btn btn-secondary">{{ user.username }}</button>
+                        </form>
+                    </li>
+
+                {% empty %}
+                    <p>You have chat with every user, way to go!</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+
+
+{% endblock content %}

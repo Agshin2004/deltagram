@@ -26,7 +26,7 @@
         {% block title %}  {% endblock title %}  
     </title>
 </head>
-<body>
+<body data-auth="{{ user.is_authenticated }}">
 
     <div class="container">
         {% include 'includes/navbar.html' %}

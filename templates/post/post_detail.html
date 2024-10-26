@@ -6,6 +6,8 @@
 
 
 {% block content %}
+    {% include 'includes/messages.html' %}
+
     <h3>{{ post.title }}</h3>
     <img src="{{ post.image.url }}" alt="{{ post.title }}">
     <p>
@@ -15,9 +17,7 @@
             <span class="like-count">{{ post.like.count }}</span>
 
             {% include 'includes/post_like_button.html' %}
-
         </p>
-
     </p>
 
 
@@ -46,13 +46,18 @@
                                     src="{{ comment.user.profile.profile_picture.url }}" alt="avatar" width="60"
                                     height="60" />
                             <div>
-                                <h6 class="fw-bold mb-1">{{ comment.user.username }}</h6>
+                                <h6 class="fw-bold mb-1">
+                                    <a href="{% url 'user_profile' username=comment.user.username %}">
+                                        {{ comment.user.username }}
+                                    </a>
+
+                                </h6>
                                 <div class="d-flex align-items-center mb-3">
                                 <p class="mb-0">
                                     {{ comment.date_created |date:"jS F, Y" }}
                                 </p>
                                 </div>
-                                    <h4>{{ comment.title }}</h4>                                
+                                    <h4>{{ comment.title }}</h4>
                                     <br>
                                 <p class="mb-0">
                                     {{ comment.description }}
